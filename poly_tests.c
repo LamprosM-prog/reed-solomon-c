@@ -88,7 +88,10 @@ int main() {
     for (int i = 1; i <= 4; i++) {
     printf("%d\n", poly_evaluate(gen, 5, gf_generator(i)));
     }
-    
+    uint8_t inv = gf_inverse(8);
+    printf("inv(8)=%d, 8*inv(8)=%d\n", inv, gf_multiply(8, inv));
+
+
     free(gen);
     return 0;
 }

@@ -94,12 +94,11 @@
         memcpy(work, a, a_len);
 
         while(current_len - 1 >= b_len - 1) {
-            uint8_t factor = gf_multiply(work[start], gf_inverse(b[0]));
-        
-            for(int i = 0; i < b_len; i++) {
+            uint8_t factor = gf_multiply(work[start], gf_inverse(b[0])); //satanic black magic
+                for(int i = 0; i < b_len; i++) {
                 work[start + i] = gf_add(work[start + i], gf_multiply(b[i], factor));
             }
-
+              
              // skip leading zeros
             while(current_len > 1 && work[start] == 0) {
                 start++;
