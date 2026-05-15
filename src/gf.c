@@ -1,4 +1,4 @@
-#include "gf.h" 
+#include "../src/gf.h" 
 #include <stdio.h>
 
 static uint8_t log_table[256];

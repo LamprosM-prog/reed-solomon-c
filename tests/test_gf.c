@@ -1,4 +1,4 @@
-#include "gf.h"
+#include "../src/gf.h"
 #include <stdio.h>
 
 int main() {

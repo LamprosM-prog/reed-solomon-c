@@ -1,7 +1,7 @@
-#include "gf.h"
-#include "poly.h"
-#include "rs_encoder.h"
-#include "rs_decode.h"
+#include "../src/gf.h"
+#include "../src/poly.h"
+#include "../src/rs_encoder.h"
+#include "../src/rs_decode.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -9,9 +9,9 @@
 
 int main() {
     gf_init();
-    uint8_t message[] = {1, 2, 3, 4};
+    uint8_t message[] = {1, 2, 3, 4,}; // H -> 72 , h - > 104   // 01001000
     int msg_len = 4;
-    int ecc_len = 4;
+    int ecc_len = 6;
     int out_len; //codeword
     int gen_len;
 
@@ -24,11 +24,14 @@ int main() {
     }
     printf("\n");
     codeword[5] ^= 0x1F; 
+    codeword[2] ^= 0x1F; 
+    codeword[1] ^= 0x1F; 
     
     printf("Codeword: ");
     for(int i = 0; i < out_len; i++) {
     printf("%d ", codeword[i]);
     }
+    printf("\n");
     uint8_t* syndromes = compute_syndromes(codeword, out_len, ecc_len);
     printf("Syndromes : ");
     for(int i = 0; i < 4; i++){

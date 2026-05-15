@@ -1,8 +1,8 @@
-#include "gf.h"
-#include "poly.h"
+#include "../src/gf.h"
+#include "../src/poly.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include "rs_encoder.h"
+#include "../src/rs_encoder.h"
 
 int main() {
     gf_init();

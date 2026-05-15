@@ -1,5 +1,5 @@
-    #include "poly.h"
-    #include "gf.h"
+    #include "../src/poly.h"
+    #include "../src/gf.h"
     #include <stdio.h>
     #include <string.h>
     #include <stdlib.h>
