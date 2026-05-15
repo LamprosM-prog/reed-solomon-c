@@ -20,9 +20,6 @@ int* chien_search(uint8_t* lambda, int lambda_len, int codeword_len, int* out_co
 
 // Forney: computes error magnitudes and corrects codeword in place
 // returns the corrected codeword (same pointer as input)
-uint8_t* forney(uint8_t* lambda, int lambda_len,
-                uint8_t* syndromes, int ecc_len,
-                uint8_t* codeword, int codeword_len,
-                int* error_positions, int error_count);
+uint8_t* forney(uint8_t* lambda, int lambda_len,uint8_t* syndromes, int ecc_len,uint8_t* codeword, int codeword_len,int* error_positions, int error_count);
 
 #endif
