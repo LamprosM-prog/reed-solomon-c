@@ -24,6 +24,11 @@ int main() {
     }
     printf("\n");
     codeword[5] ^= 0x1F; 
+    
+    printf("Codeword: ");
+    for(int i = 0; i < out_len; i++) {
+    printf("%d ", codeword[i]);
+    }
     uint8_t* syndromes = compute_syndromes(codeword, out_len, ecc_len);
     printf("Syndromes : ");
     for(int i = 0; i < 4; i++){
