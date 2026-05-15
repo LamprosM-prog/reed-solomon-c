@@ -38,6 +38,14 @@ All polynomials use **highest-degree-first** convention (index 0 = leading term)
 
 This codec is the error-correction layer of a larger protocol combining Reed-Solomon with ElGamal encryption over UDP, targeting a real two-machine demonstration.
 
+## Related Project
+
+This C implementation was heavily inspired by and based on my earlier C# implementation:
+
+- [reed-solomon-csharp](https://github.com/LamprosM-prog/reed-solomon-csharp)
+
+The C# version contains additional documentation, explanations, and implementation notes that may help readers better understand the algorithms and architecture used here.
+
 ## License
 
 MIT
