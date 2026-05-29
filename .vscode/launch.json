@@ -1,0 +1,21 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug rs_tests (safe)",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/rs_tests",
+            "cwd": "${workspaceFolder}",
+            "stopAtEntry": true,
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "preLaunchTask": "make build",   
+            "setupCommands": [
+                {
+                    "text": "-enable-pretty-printing"
+                }
+            ]
+        }
+    ]
+}
