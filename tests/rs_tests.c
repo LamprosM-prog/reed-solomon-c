@@ -6,68 +6,74 @@
 #include <string.h>
 #include <stdio.h>
 
-
 int main() {
     gf_init();
-    uint8_t message[] = {1, 2, 3, 4,}; // H -> 72 , h - > 104   // 01001000
-    int msg_len = 4;
-    int ecc_len = 6;
-    int out_len; //codeword
+
+    // k=800 symbols (1600 bytes), n=1600 symbols (3200 bytes), ecc=800 symbols
+    int msg_len = 800;   // symbols
+    int ecc_len = 800;   // symbols
+    int out_len;
     int gen_len;
 
-    uint8_t* gen = build(ecc_len, &gen_len);
-    uint8_t* codeword = encode(message, gen, msg_len, ecc_len, &out_len);
+    // build message: 784 real symbols (c1+c2+e+s) + 16 padding
+    uint16_t* message = calloc(msg_len, sizeof(uint16_t));
+    // fill with dummy payload — 32 bytes of "raw data" spread across fields
+    for (int i = 0; i < msg_len; i++) {
+        message[i] = (uint16_t)(i + 1);  // just recognizable test values
+    }
 
-    printf("Codeword: ");
-    for(int i = 0; i < out_len; i++) {
-    printf("%d ", codeword[i]);
+    uint16_t* gen = build(ecc_len, &gen_len);
+    uint16_t* codeword = encode(message, gen, msg_len, ecc_len, &out_len);
+
+    printf("Codeword length: %d symbols (%d bytes)\n", out_len, out_len * 2);
+
+    // inject 350 errors at evenly spaced positions
+    int error_count = 350;
+    int* injected = malloc(error_count * sizeof(int));
+    for (int i = 0; i < error_count; i++) {
+        int pos = (i * out_len) / error_count;  
+        injected[i] = pos;
+        codeword[pos] ^= 0x1234;                // corrupt with known pattern
     }
-    printf("\n");
-    codeword[5] ^= 0x1F; 
-    codeword[2] ^= 0x1F; 
-    codeword[1] ^= 0x1F; 
-    
-    printf("Codeword: ");
-    for(int i = 0; i < out_len; i++) {
-    printf("%d ", codeword[i]);
+
+    printf("Injected %d errors\n", error_count);
+
+    // syndromes
+    uint16_t* syndromes = compute_syndromes(codeword, out_len, ecc_len);
+    printf("Has errors: %d\n", check_errors(syndromes, ecc_len));
+
+    // berlekamp-massey
+    int lambda_len;
+    uint16_t* lambda = berlekamp_massey(syndromes, ecc_len, &lambda_len);
+    printf("Lambda degree: %d\n", lambda_len - 1);
+
+    // chien search
+    int found_count;
+    int* error_positions = chien_search(lambda, lambda_len, out_len, &found_count);
+    printf("Errors found by Chien: %d\n", found_count);
+
+    // forney + correction
+    uint16_t* corrected = forney(lambda, lambda_len, syndromes, ecc_len,
+                                  codeword, out_len, error_positions, found_count);
+
+    // verify against original
+    int ok = 1;
+    for (int i = 0; i < msg_len; i++) {
+        if (corrected[i] != message[i]) {
+            printf("MISMATCH at symbol %d: got %d expected %d\n",
+                   i, corrected[i], message[i]);
+            ok = 0;
+        }
     }
-    printf("\n");
-    uint8_t* syndromes = compute_syndromes(codeword, out_len, ecc_len);
-    printf("Syndromes : ");
-    for(int i = 0; i < 4; i++){
-        printf("%d ", syndromes[i]);
-    }
-    printf("\n");
-    printf("Does it have errors? %i", check_errors(syndromes, ecc_len));
-   printf("\n");
-    int out_lambda_len;
-    uint8_t* lambda = berlekamp_massey(syndromes, ecc_len, &out_lambda_len);
-    printf("Lambda: ");
-    for(int i = 0; i < out_lambda_len; i++){
-        printf("%d ", lambda[i]);
-    }
-    printf("\n");
-    int out_len_pos;
-    int* error_possitons = chien_search(lambda, out_lambda_len,out_len, &out_len_pos);
-    printf("out_len_pos: %d\n", out_len_pos);
-    printf("Error magnitudes : ");
-    printf("\n");
-    for(int i = 0; i < out_len_pos; i ++){
-        printf("%d ", error_possitons[i]);
-    }
-    printf("\n");
-    uint8_t* corrected_codeword = forney(lambda, out_lambda_len, syndromes, ecc_len, codeword, out_len, error_possitons, out_len_pos);
-    printf("Corrected codeword: ");
-    for(int i=0; i< out_len; i++){ 
-        printf("%d ", corrected_codeword[i]);
-    }
-    printf("\n");
-    
-    free(error_possitons);
+    if (ok) printf("All %d message symbols recovered correctly.\n", msg_len);
+
+    free(injected);
+    free(error_positions);
     free(syndromes);
     free(lambda);
     free(gen);
     free(codeword);
+    free(message);
 
-return 0;
+    return 0;
 }

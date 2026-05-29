@@ -34,6 +34,8 @@ gcc gf.c poly.c rs_encoder.c rs_decode.c rs_tests.c -o rs_tests
 
 All polynomials use **highest-degree-first** convention (index 0 = leading term), consistent across encoder, decoder, and polynomial arithmetic. Berlekamp-Massey builds the error locator polynomial lowest-first internally and reverses before returning, matching the convention used everywhere else.
 
+At first this was designed with GF(2^8) however due to necessities of the correlated project I expanded it to GF(2^16).
+ 
 ## Part of
 
 This codec is the error-correction layer of a larger protocol combining Reed-Solomon with ElGamal encryption over UDP, targeting a real two-machine demonstration.
